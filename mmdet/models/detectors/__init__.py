@@ -27,6 +27,7 @@ from .panoptic_two_stage_segmentor import TwoStagePanopticSegmentor
 from .point_rend import PointRend
 from .queryinst import QueryInst
 from .reppoints_detector import RepPointsDetector
+from .reppoints_v2_detector import RepPointsV2Detector
 from .retinanet import RetinaNet
 from .rpn import RPN
 from .scnet import SCNet
@@ -43,7 +44,7 @@ from .yolof import YOLOF
 from .yolox import YOLOX
 
 __all__ = [
-    'ATSS', 'BaseDetector', 'SingleStageDetector', 'TwoStageDetector', 'RPN',
+    'ATSS', 'BaseDetector','RepPointsV2Detector', 'SingleStageDetector', 'TwoStageDetector', 'RPN',
     'KnowledgeDistillationSingleStageDetector', 'FastRCNN', 'FasterRCNN',
     'MaskRCNN', 'CascadeRCNN', 'HybridTaskCascade', 'RetinaNet', 'FCOS',
     'GridRCNN', 'MaskScoringRCNN', 'RepPointsDetector', 'FOVEA', 'FSAF',
