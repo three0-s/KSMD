@@ -175,4 +175,4 @@ data = dict(
         classes=classes,
         ann_file='/home/jovyan/yewon/CV/PITR/pitr_valid_annotation.json'),
    )
-load_from = '/home/jovyan/yewon/CV/PITR/mmdetection/checkpoints/reppoints_moment_x101_dcn_fpn_2x_mt.pth'
+load_from = '/home/jovyan/yewon/CV/PITR/mmdetection/checkpoints/reppoints_v2_x101_fpn_dconv_c3-c5_giou_mstrain_2x_coco-3d418239.pth'

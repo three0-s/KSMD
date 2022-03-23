@@ -4,21 +4,21 @@ from torch.autograd import Function
 
 from mmcv.cnn import ConvModule
 
-from . import corner_pool_ext
+from . import corner_pool
 
 
 class TopPoolFunction(Function):
 
     @staticmethod
     def forward(ctx, input):
-        output = corner_pool_ext.top_pool_forward(input)
+        output = corner_pool.top_pool_forward(input)
         ctx.save_for_backward(input)
         return output
 
     @staticmethod
     def backward(ctx, grad_output):
         input = ctx.saved_variables[0]
-        output = corner_pool_ext.top_pool_backward(input, grad_output)
+        output = corner_pool.top_pool_backward(input, grad_output)
         return output
 
 
@@ -26,14 +26,14 @@ class BottomPoolFunction(Function):
 
     @staticmethod
     def forward(ctx, input):
-        output = corner_pool_ext.bottom_pool_forward(input)
+        output = corner_pool.bottom_pool_forward(input)
         ctx.save_for_backward(input)
         return output
 
     @staticmethod
     def backward(ctx, grad_output):
         input = ctx.saved_variables[0]
-        output = corner_pool_ext.bottom_pool_backward(input, grad_output)
+        output = corner_pool.bottom_pool_backward(input, grad_output)
         return output
 
 
@@ -41,14 +41,14 @@ class LeftPoolFunction(Function):
 
     @staticmethod
     def forward(ctx, input):
-        output = corner_pool_ext.left_pool_forward(input)
+        output = corner_pool.left_pool_forward(input)
         ctx.save_for_backward(input)
         return output
 
     @staticmethod
     def backward(ctx, grad_output):
         input = ctx.saved_variables[0]
-        output = corner_pool_ext.left_pool_backward(input, grad_output)
+        output = corner_pool.left_pool_backward(input, grad_output)
         return output
 
 
@@ -56,14 +56,14 @@ class RightPoolFunction(Function):
 
     @staticmethod
     def forward(ctx, input):
-        output = corner_pool_ext.right_pool_forward(input)
+        output = corner_pool.right_pool_forward(input)
         ctx.save_for_backward(input)
         return output
 
     @staticmethod
     def backward(ctx, grad_output):
         input = ctx.saved_variables[0]
-        output = corner_pool_ext.right_pool_backward(input, grad_output)
+        output = corner_pool.right_pool_backward(input, grad_output)
         return output
 
 
