@@ -3,18 +3,18 @@ _base_ = [
     '../_base_/schedules/schedule_1x.py', '../_base_/default_runtime.py'
 ]
 
-
 lr_config = dict(warmup_iters=1000, step=[27, 33])
 runner = dict(max_epochs=36)
-pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_tiny_patch4_window7_224.pth' 
+pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_base_patch4_window12_384_22k.pth'
+
 model = dict(
-    type='RepPointsDetector',
-    backbone=dict(
+    type='ATSS',
+        backbone=dict(
         type='SwinTransformer',
-        embed_dims=96,
-        depths=[2, 2, 6, 2],
-        num_heads=[3, 6, 12, 24],
-        window_size=7,
+        embed_dims=128,
+        depths=[2, 2, 18, 2],
+        num_heads=[4, 8, 16, 32],
+        window_size=12,
         mlp_ratio=4,
         qkv_bias=True,
         qk_scale=None,
@@ -28,56 +28,48 @@ model = dict(
         init_cfg=dict(type='Pretrained', checkpoint=pretrained)),
     neck=dict(
         type='FPN',
-        in_channels=[96, 192, 384, 768],
+        in_channels=[256, 512, 1024, 2048],
         out_channels=256,
         start_level=1,
-        add_extra_convs='on_input',
+        add_extra_convs='on_output',
         num_outs=5),
     bbox_head=dict(
-        type='RepPointsHead',
-        num_classes=7,
+        type='ATSSHead',
+        num_classes=80,
         in_channels=256,
+        stacked_convs=4,
         feat_channels=256,
-        point_feat_channels=256,
-        stacked_convs=3,
-        num_points=9,
-        gradient_mul=0.1,
-        point_strides=[8, 16, 32, 64, 128],
-        point_base_scale=4,
+        anchor_generator=dict(
+            type='AnchorGenerator',
+            ratios=[1.0],
+            octave_base_scale=8,
+            scales_per_octave=1,
+            strides=[8, 16, 32, 64, 128]),
+        bbox_coder=dict(
+            type='DeltaXYWHBBoxCoder',
+            target_means=[.0, .0, .0, .0],
+            target_stds=[0.1, 0.1, 0.2, 0.2]),
         loss_cls=dict(
             type='FocalLoss',
             use_sigmoid=True,
             gamma=2.0,
             alpha=0.25,
             loss_weight=1.0),
-        loss_bbox_init=dict(type='SmoothL1Loss', beta=0.11, loss_weight=0.5),
-        loss_bbox_refine=dict(type='SmoothL1Loss', beta=0.11, loss_weight=1.0),
-        transform_method='moment'),
+        loss_bbox=dict(type='GIoULoss', loss_weight=2.0),
+        loss_centerness=dict(
+            type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0)),
     # training and testing settings
     train_cfg=dict(
-        init=dict(
-            assigner=dict(type='PointAssigner', scale=4, pos_num=1),
-            allowed_border=-1,
-            pos_weight=-1,
-            debug=False),
-        refine=dict(
-            assigner=dict(
-                type='MaxIoUAssigner',
-                pos_iou_thr=0.5,
-                neg_iou_thr=0.4,
-                min_pos_iou=0,
-                ignore_iof_thr=-1),
-            allowed_border=-1,
-            pos_weight=-1,
-            debug=False)),
-       
+        assigner=dict(type='ATSSAssigner', topk=9),
+        allowed_border=-1,
+        pos_weight=-1,
+        debug=False),
     test_cfg=dict(
         nms_pre=1000,
         min_bbox_size=0,
         score_thr=0.05,
-        nms=dict(type='nms', iou_threshold=0.5),
+        nms=dict(type='nms', iou_threshold=0.6),
         max_per_img=100))
-
 
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
@@ -86,7 +78,7 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='RandomFlip', flip_ratio=0.),
+    dict(type='RandomFlip', flip_ratio=0.5),
     dict(
         type='AutoAugment',
         policies=[[
@@ -124,7 +116,7 @@ train_pipeline = [
     dict(type='DefaultFormatBundle'),
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),
 ]
-
+# optimizer
 optimizer = dict(
     _delete_=True,
     type='AdamW',
@@ -137,24 +129,7 @@ optimizer = dict(
             'relative_position_bias_table': dict(decay_mult=0.),
             'norm': dict(decay_mult=0.)
         }))
-
-
-# Modify dataset related settings
-dataset_type = 'COCODataset'
-classes = ('rain', 'cloud', 'person', 'puddle', 'lightning', 'direct protectection', 'indirect protection')
 data = dict(
-    train=dict(
-        img_prefix='/home/jovyan/yewon/CV/PITR/img_train/',
-        classes=classes,
-        pipeline=train_pipeline,
-        ann_file='/home/jovyan/yewon/CV/PITR/pitr_train_annotation.json'),
-    val=dict(
-        img_prefix='/home/jovyan/yewon/CV/PITR/img_valid/',
-        classes=classes,
-        ann_file='/home/jovyan/yewon/CV/PITR/pitr_valid_annotation.json'),
-    test=dict(
-        img_prefix='/home/jovyan/yewon/CV/PITR/img_valid/',
-        classes=classes,
-        ann_file='/home/jovyan/yewon/CV/PITR/pitr_valid_annotation.json'),
-   )
-load_from = '/home/jovyan/yewon/CV/PITR/mmdetection/checkpoints/reppoints_moment_x101_dcn_fpn_2x_mt.pth'
+    train=dict(pipeline=train_pipeline),
+    samples_per_gpu=16
+)

@@ -6,15 +6,15 @@ _base_ = [
 
 lr_config = dict(warmup_iters=1000, step=[27, 33])
 runner = dict(max_epochs=36)
-pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_tiny_patch4_window7_224.pth' 
+pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_base_patch4_window12_384_22k.pth' 
 model = dict(
     type='RepPointsDetector',
     backbone=dict(
         type='SwinTransformer',
-        embed_dims=96,
-        depths=[2, 2, 6, 2],
-        num_heads=[3, 6, 12, 24],
-        window_size=7,
+        embed_dims=128,
+        depths=[2, 2, 18, 2],
+        num_heads=[4, 8, 16, 32],
+        window_size=12,
         mlp_ratio=4,
         qkv_bias=True,
         qk_scale=None,
@@ -28,10 +28,10 @@ model = dict(
         init_cfg=dict(type='Pretrained', checkpoint=pretrained)),
     neck=dict(
         type='FPN',
-        in_channels=[96, 192, 384, 768],
+        in_channels=[128, 256, 512, 1024],
         out_channels=256,
         start_level=1,
-        add_extra_convs='on_input',
+        # add_extra_convs='on_input',
         num_outs=5),
     bbox_head=dict(
         type='RepPointsHead',
@@ -86,7 +86,7 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='RandomFlip', flip_ratio=0.),
+    dict(type='RandomFlip', flip_ratio=0.5),
     dict(
         type='AutoAugment',
         policies=[[
@@ -137,24 +137,3 @@ optimizer = dict(
             'relative_position_bias_table': dict(decay_mult=0.),
             'norm': dict(decay_mult=0.)
         }))
-
-
-# Modify dataset related settings
-dataset_type = 'COCODataset'
-classes = ('rain', 'cloud', 'person', 'puddle', 'lightning', 'direct protectection', 'indirect protection')
-data = dict(
-    train=dict(
-        img_prefix='/home/jovyan/yewon/CV/PITR/img_train/',
-        classes=classes,
-        pipeline=train_pipeline,
-        ann_file='/home/jovyan/yewon/CV/PITR/pitr_train_annotation.json'),
-    val=dict(
-        img_prefix='/home/jovyan/yewon/CV/PITR/img_valid/',
-        classes=classes,
-        ann_file='/home/jovyan/yewon/CV/PITR/pitr_valid_annotation.json'),
-    test=dict(
-        img_prefix='/home/jovyan/yewon/CV/PITR/img_valid/',
-        classes=classes,
-        ann_file='/home/jovyan/yewon/CV/PITR/pitr_valid_annotation.json'),
-   )
-load_from = '/home/jovyan/yewon/CV/PITR/mmdetection/checkpoints/reppoints_moment_x101_dcn_fpn_2x_mt.pth'
