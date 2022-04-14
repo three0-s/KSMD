@@ -3,18 +3,19 @@ _base_ = [
     '../_base_/schedules/schedule_1x.py', '../_base_/default_runtime.py'
 ]
 
-lr_config = dict(warmup_iters=1000, step=[15, 21])
+lr_config = dict(warmup_iters=100, step=[15, 21])
 runner = dict(max_epochs=24)
-pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_base_patch4_window12_384_22k.pth'
+pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_small_patch4_window7_224.pth'
+
 
 model = dict(
     type='ATSS',
-        backbone=dict(
+    backbone=dict(
         type='SwinTransformer',
-        embed_dims=128,
+        embed_dims=96,
         depths=[2, 2, 18, 2],
-        num_heads=[4, 8, 16, 32],
-        window_size=12,
+        num_heads=[3, 6, 12, 24],
+        window_size=7,
         mlp_ratio=4,
         qkv_bias=True,
         qk_scale=None,
@@ -22,22 +23,27 @@ model = dict(
         attn_drop_rate=0.,
         drop_path_rate=0.2,
         patch_norm=True,
-        out_indices=(0, 1, 2, 3),
+        out_indices=(1, 2, 3),
+        # Please only add indices that would be used
+        # in FPN, otherwise some parameter will not be used
         with_cp=False,
         convert_weights=True,
         init_cfg=dict(type='Pretrained', checkpoint=pretrained)),
-    neck=dict(
-        type='FPN',
-        in_channels=[256, 512, 1024, 2048],
-        out_channels=256,
-        start_level=1,
-        add_extra_convs='on_output',
-        num_outs=5),
+    neck=[
+        dict(
+            type='FPN',
+            in_channels=[192, 384, 768],
+            out_channels=256,
+            start_level=0,
+            add_extra_convs='on_output',
+            num_outs=5),
+        dict(type='DyHead', in_channels=256, out_channels=256, num_blocks=6)
+    ],
     bbox_head=dict(
         type='ATSSHead',
         num_classes=7,
         in_channels=256,
-        stacked_convs=4,
+        stacked_convs=0,
         feat_channels=256,
         anchor_generator=dict(
             type='AnchorGenerator',
@@ -68,7 +74,8 @@ model = dict(
         nms_pre=1000,
         min_bbox_size=0,
         score_thr=0.05,
-        nms=dict(type='soft_nms', iou_threshold=0.5, min_score=0.05),
+        nms=dict(type='soft_nms', iou_threshold=0.7, min_score=0.05),
+        # nms=dict(type='nms', iou_threshold=0.5),
         max_per_img=500))
 
 img_norm_cfg = dict(
