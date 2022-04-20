@@ -3,8 +3,8 @@ _base_ = [
     '../_base_/schedules/schedule_1x.py', '../_base_/default_runtime.py'
 ]
 
-lr_config = dict(warmup_iters=250, step=[27, 33])
-runner = dict(max_epochs=36)
+lr_config = dict(warmup_iters=400, step=[35 ,47, 57])
+runner = dict(max_epochs=60)
 pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_small_patch4_window7_224.pth'
 
 
@@ -143,10 +143,9 @@ test_pipeline = [
 optimizer = dict(
     _delete_=True,
     type='AdamW',
-    # type='SGD',
     lr=0.0001,
     betas=(0.9, 0.999),
-    weight_decay=0.002,
+    weight_decay=0.01,
     paramwise_cfg=dict(
         custom_keys={
             'absolute_pos_embed': dict(decay_mult=0.),
