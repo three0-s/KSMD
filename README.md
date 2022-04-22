@@ -1,4 +1,9 @@
 <div align="center">
+  <img src="resources/network.png" width="600"/>
+  <div>&nbsp;</div>
+  <div align="center">
+    <b><font size="12">Object detection for PITR dataset</font></b>
+  </div>
   <img src="resources/mmdet-logo.png" width="600"/>
   <div>&nbsp;</div>
   <div align="center">
