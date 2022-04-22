@@ -12,9 +12,11 @@ This is an official implementation of 'Object detection for PITR Test'. This pro
 <!-- TABLE HEADER -->
 <th valign="bottom"></th>
 <th valign="bottom">Swin-S_dyhead_atss_3x</th>
+<th valign="bottom">config</th>
 <!-- TABLE BODY -->
 <tr><td align="left">pre-trained model</td>
-<td align="center"><a href="https://naver.com">download(notyet)</a></td>
+<td align="center"><a href="https://github.com/three0-s/KSMD/releases/download/v.PITR.0.1/swin-s_dyhead_fpn_3x_coco.pth">download(github)</a></td>
+<td align="center"><a href="configs/PITR/dyhead_swin-s_fpn_3x+ms_coco.py">config(mmdet)</a></td>
 </tr>
 </tr>
 </tbody></table>
