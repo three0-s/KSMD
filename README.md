@@ -11,7 +11,7 @@ This is an official implementation of 'Object detection for PITR Test'. This pro
 <!-- START TABLE -->
 <!-- TABLE HEADER -->
 <th valign="bottom"></th>
-<th valign="bottom">Swin-S_dyhead_atss_3x</th>
+<th valign="bottom">swin-s_dyhead_fpn_3x_coco</th>
 <th valign="bottom">config</th>
 <!-- TABLE BODY -->
 <tr><td align="left">pre-trained model</td>
