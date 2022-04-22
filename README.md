@@ -1,9 +1,30 @@
+## Object detection for PITR test
+
+<p align="center">
+  <img src="resources/figures.001.jpeg" width="500">
+</p>
+
+This is an official implementation of 'Object detection for PITR Test'. This project has been done with the Kosin Medical Hospital.
+
+### COCO 2017 Pretrained model
+<table><tbody>
+<!-- START TABLE -->
+<!-- TABLE HEADER -->
+<th valign="bottom"></th>
+<th valign="bottom">Swin-S_dyhead_atss_3x</th>
+<!-- TABLE BODY -->
+<tr><td align="left">pre-trained model</td>
+<td align="center"><a href="https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_base.pth">download</a></td>
+</tr>
+<tr><td align="left">md5</td>
+<td align="center"><tt>8cad7c</tt></td>
+</tr>
+</tbody></table>
+
+
+
+
 <div align="center">
-  <img src="resources/network.png" width="600"/>
-  <div>&nbsp;</div>
-  <div align="center">
-    <b><font size="12">Object detection for PITR dataset</font></b>
-  </div>
   <img src="resources/mmdet-logo.png" width="600"/>
   <div>&nbsp;</div>
   <div align="center">
