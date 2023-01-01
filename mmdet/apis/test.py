@@ -10,7 +10,7 @@ import torch
 import torch.distributed as dist
 from mmcv.image import tensor2imgs
 from mmcv.runner import get_dist_info
-
+import json
 from mmdet.core import encode_mask_results
 
 
@@ -23,6 +23,9 @@ def single_gpu_test(model,
     results = []
     dataset = data_loader.dataset
     PALETTE = getattr(dataset, 'PALETTE', None)
+    # overload
+    PALETTE = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (128, 128, 128), (255, 128, 255), (174, 64, 234), (190, 167, 131)]
+    TEXT = (255, 255, 255)
     prog_bar = mmcv.ProgressBar(len(dataset))
     for i, data in enumerate(data_loader):
         with torch.no_grad():
@@ -54,12 +57,16 @@ def single_gpu_test(model,
                     img_show,
                     result[i],
                     bbox_color=PALETTE,
-                    text_color=PALETTE,
+                    text_color=TEXT,
                     mask_color=PALETTE,
                     show=show,
                     out_file=out_file,
                     score_thr=show_score_thr)
-
+                
+                result_dict={dataset.CLASSES[i]: int(sum(cls_result[:, -1] > show_score_thr)) for i, cls_result in enumerate(result[i])}
+                json_path = out_file.replace('.', '_') + '.json'
+                with open(json_path, 'w') as f:
+                    json.dump(result_dict, f)
         # encode mask results
         if isinstance(result[0], tuple):
             result = [(bbox_results, encode_mask_results(mask_results))
