@@ -4,7 +4,7 @@
   <img src="resources/figures.001.jpeg" width="800">
 </p>
 
-This is an official implementation of 'Object detection based on the deep learning method in a person in the rain image'. This project has been done with the Kosin Medical Hospital. 
+This is an official implementation of ['Object detection based on the deep learning method in a person in the rain image'](https://www.earticle.net/Article/A422634). This project has been done with the Kosin Medical Hospital. 
 
 ### COCO 2017 Pretrained model
 <table><tbody>
